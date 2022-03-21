@@ -160,7 +160,7 @@ HyperTest also facilitates the provision to download the artefacts on your local
 The CLI option *--config* is used for providing the custom HyperTest YAML file (i.e. *HyperExecute-Yaml/.hyperTestMatrix.yaml.yaml*). Run the following command on the terminal to trigger the tests in Feature file Scenario on the HyperTest grid. 
 
 ```bash
-./concierge --config --verbose HyperExecute-Yaml/.hyperExecute_matrix.yaml
+./concierge --config --verbose -i .hyperExecute_matrix.yaml
 ```
 
 Visit [HyperTest Automation Dashboard](https://automation.lambdatest.com/hypertest) to check the status of execution:
@@ -267,7 +267,7 @@ HyperTest also facilitates the provision to download the artefacts on your local
 The CLI option *--config* is used for providing the custom HyperTest YAML file (i.e. *HyperExecute-Yaml/.hypertestStatic.yaml*). Run the following command on the terminal to trigger the tests in Python files on the HyperTest grid. The *--download-artifacts* option is used to inform HyperTest to download the artefacts for the job.
 
 ```bash
-./concierge --config --verbose HyperExecute-Yaml/.hypertest_autoSplit.yaml
+./concierge --config --verbose -i .hypertest_autoSplit.yaml
 ```
 
 Visit [HyperTest Automation Dashboard](https://automation.lambdatest.com/hypertest) to check the status of execution
