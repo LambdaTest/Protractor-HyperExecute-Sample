@@ -1,275 +1,300 @@
-# Protractor Tutorial 
----
-![LambdaTest Logo](https://www.lambdatest.com/static/images/logo.svg)
+<img height="100" alt="hypertest_logo" src="https://user-images.githubusercontent.com/1688653/153136695-f5292c75-5d2f-4c70-aeb5-0f00a6962730.png">
 
-![Protractor Logo](https://www.lambdatest.com/blog/wp-content/uploads/2020/04/1_8FualX4XQbOUJDrg8yQAjQ.jpeg)
+HyperTest is a smart test orchestration platform to run end-to-end Selenium tests at the fastest speed possible. HyperTest lets you achieve an accelerated time to market by providing a test infrastructure that offers optimal speed, test orchestration, and detailed execution logs.
 
+The overall experience helps teams test code and fix issues at a much faster pace. HyperTest is configured using a YAML file. Instead of moving the Hub close to you, HyperTest brings the test scripts close to the Hub!
 
-This tutorial will help you automate your selenium tests using Protractor on LambdaTest Cloud Selenium Grid. 
-## Prerequisites for Protractor tutorial for Selenium and JavaScript
-* **Node.js and 
-Package Manager (npm)** : Install Node.js from [here](https://nodejs.org/en/#home-downloadhead) Or Install Node.js with [Homebrew](http://brew.sh/)
-```
-$ brew install node
-```
+* <b>HyperTest HomePage</b>: https://www.lambdatest.com/hypertest
+* <b>Lambdatest HomePage</b>: https://www.lambdatest.com
+* <b>LambdaTest Support</b>: [support@lambdatest.com](mailto:support@lambdatest.com)
 
-* **LambdaTest Credentials**
-   * Set LambdaTest username and access key in environment variables. It can be obtained from [LambdaTest Automation Dashboard](https://automation.lambdatest.com/)    
-    example:
-   - For linux/mac
-    ```
-    export LT_USERNAME="YOUR_USERNAME"
-    export LT_ACCESS_KEY="YOUR ACCESS KEY"
+To know more about how HyperTest does intelligent Test Orchestration, do check out [HyperTest Getting Started Guide](https://www.lambdatest.com/support/docs/getting-started-with-hypertest/)
 
-    ```
-    - For Windows
-    ```
-    set LT_USERNAME="YOUR_USERNAME"
-    set LT_ACCESS_KEY="YOUR ACCESS KEY"
+# How to run Selenium automation tests on HyperTest (using protractor framework)
 
-    ```
-## Setup for Running the test
-   * Clone the github repo in your local browser using ```git clone https://github.com/LambdaTest/protractor-selenium-sample.git``` or download it directly from [here](https://github.com/LambdaTest/protractor-selenium-sample/archive/master.zip)
-   * Navigate to the folder in which you have cloned or downloaded the repo and install dependencies by using `npm install`
-   * Update `fileupload.conf.js` files inside the `conf/` directory with your LambdaTest Username and Access Key. 
+* [Pre-requisites](#pre-requisites)
+   - [Download Concierge](#download-concierge)
+   - [Configure Environment Variables](#configure-environment-variables)
    
-## Executing Protractor JavaScript Test
+* [Matrix Execution with PyTest](#matrix-execution-with-pytest)
+   - [Core](#core)
+   - [Pre Steps and Dependency Caching](#pre-steps-and-dependency-caching)
+   - [Post Steps](#post-steps)
+   - [Artefacts Management](#artefacts-management)
+   - [Test Execution](#test-execution)
 
-### Test Scenario 
+* [Auto-Split Execution with PyTest](#auto-split-execution-with-pytest)
+   - [Core](#core-1)
+   - [Pre Steps and Dependency Caching](#pre-steps-and-dependency-caching-1)
+   - [Post Steps](#post-steps-1)
+   - [Artefacts Management](#artefacts-management-1)
+   - [Test Execution](#test-execution-1)
 
-The following code will run a test on LambdaTest Selenium Grid which will open a [URL](https://lambdatest.github.io/sample-todo-app/) and then strike the first and second items in the list, followed by addition of a new item. After this, it will quit the browser. 
+* [Secrets Management](#secrets-management)
+* [Navigation in Automation Dashboard](#navigation-in-automation-dashboard)
 
+# Pre-requisites
 
-To execute Protractor Javascript test on LambdaTest Selenium Grid, we'll need to navigate to the folder in which `conf` files are present. Inside this directory, we can run the the tests in single or parallel. 
+Before using HyperTest, you have to download Concierge CLI corresponding to the host OS. Along with it, you also need to export the environment variables *LT_USERNAME* and *LT_ACCESS_KEY* that are available in the [LambdaTest Profile](https://accounts.lambdatest.com/detail/profile) page.
 
-To start a test, say we run a test with the file name "single" we'd need to run the following command: 
-```npm run single``` 
-This command will run the following code in your LambdaTest Selenium Grid. 
+## Download Concierge
 
-```
-username= process.env.LT_USERNAME || "<your username>",
-accessKey=  process.env.LT_ACCESS_KEY || "<your accessKey>",
+Concierge is a CLI for interacting and running the tests on the HyperTest Grid. Concierge provides a host of other useful features that accelerate test execution. In order to trigger tests using Concierge, you need to download the Concierge binary corresponding to the platform (or OS) from where the tests are triggered:
 
-exports.config = {
-  'specs': ['../specs/single.js'],
+Also, it is recommended to download the binary in the project's parent directory. Shown below is the location from where you can download the Concierge binary: 
 
-  seleniumAddress: 'https://'+ username +':'+ accessKey  +'@hub.lambdatest.com/wd/hub',
+* Mac: https://downloads.lambdatest.com/concierge/darwin/concierge
+* Linux: https://downloads.lambdatest.com/concierge/linux/concierge
+* Windows: https://downloads.lambdatest.com/concierge/windows/concierge.exe
 
-  'capabilities': {
-    'build': 'protractor-LambdaTest-Single',
-    'browserName': 'chrome',
-    'version':'73.0',
-    'platform': 'Windows 10',
-    'video': true,
-    'network': true,
-    'console': true,
-    'visual': true
-  },
-  onPrepare: () => {
+## Configure Environment Variables
 
-    myReporter = {
-        specStarted: function(result) {
-          specStr= result.id
-          spec_id = parseInt(specStr[specStr.length -1])
-          browser.getProcessedConfig().then(function (config) {
-            var fullName = config.specs[spec_id];
-            browser.executeScript("lambda-name="+fullName.split(/(\\|\/)/g).pop())
-          });
-        },
-        specDone: function(result) {
-          browser.executeScript("lambda-status="+result.status);
-        }
-      };
-      jasmine.getEnv().addReporter(myReporter);
-  },
-  onComplete: () => {
-    browser.quit();
-  }
+Before the tests are run, please set the environment variables LT_USERNAME & LT_ACCESS_KEY from the terminal. The account details are available on your [LambdaTest Profile](https://accounts.lambdatest.com/detail/profile) page.
 
-};
+For macOS:
 
-```
-### Desired Capabilities 
-
-Now we have a first script ready. Let us specify the capabilities to run the script on LambdaTest cloud-based Selenium Grid. LambdaTest provides a [capability generator](https://www.lambdatest.com/capabilities-generator/) to the capabilities in all the major languages. All you need to do is to select the OS, Resolution, Browser, Version and the code will be generated. You can just copy it and paste it in your code.
-
-```  'capabilities': {
-    'build': 'protractor-LambdaTest-Single',
-    'browserName': 'chrome',
-    'version':'73.0',
-    'platform': 'Windows 10',
-    'video': true,
-    'network': true,
-    'console': true,
-    'visual': true
-  },
-  ```
-
-This code will fire up a virtual machine with Chrome 73 on Windows 10 and will perform the given function. 
-
-
- #### Output from the command line 
-
- ![Output](https://www.lambdatest.com/blog/wp-content/uploads/2020/04/Command-line-Protractor.png)
- 
- ##### Output on LambdaTest Dashboard
-![Automation Dashboard](https://www.lambdatest.com/blog/wp-content/uploads/2020/04/Automation-dashboard.png)
-
-
-## Parallel Testing for Protractor JavaScript
-
-Will use the same test script over different configuration to demonstrate parallel testing. Parallel testing with Protractor will help you to run multiple test cases simultaneously.
-
-* **Parallel Test**- Here is JavaScript file to run Protractor Testing on a parallel environment i.e. different operating system (Windows 10 and Mac OS Catalina) and different browsers (Chrome, Mozilla Firefox,Internet Explore, Edge, and Safari).
-
-To start a test, we'd need to run the following command: ```npm run parallel``` This command will run the following code in your LambdaTest Selenium Grid.
-
-
-
-```
-username= process.env.LT_USERNAME || "<your username>",
-accessKey=  process.env.LT_ACCESS_KEY || "<your accessKey>",
-
-exports.config = {
-  'specs': [ '../specs/single.js' ],
-
-  seleniumAddress: 'https://'+username+':'+accessKey+'@hub.lambdatest.com/wd/hub',
-
-  'commonCapabilities': {
-    'build': 'protractor-selenium-sample',
-    'tunnel': false
-  },
-
-  'multiCapabilities': [{
-    'browserName': 'Chrome',
-    'version':'71.0',
-    'platform': 'Windows 10'
-  },{
-    'browserName': 'Safari',
-    'version':'12.0',
-    'platform': 'macOS Mojave'
-  },{
-    'browserName': 'MicrosoftEdge',
-    'version':'18.0',
-    'platform': 'Windows 10'
-  },{
-    'browserName': 'Firefox',
-    'version':'66.0',
-    'platform': 'Windows 10'
-  },{
-    'browserName': 'Internet explorer',
-    'version':'11.0',
-    'platform': 'Windows 10'
-  }],
-
-  onPrepare: () => {
-
-    myReporter = {
-      specStarted: function(result) {
-        specStr= result.id
-        spec_id = parseInt(specStr[specStr.length -1])
-        browser.getProcessedConfig().then(function (config) {
-          var fullName = config.specs[spec_id];
-          browser.executeScript("lambda-name="+fullName.split(/(\\|\/)/g).pop())
-        });
-      },
-      specDone: function(result) {
-        browser.executeScript("lambda-status="+result.status);
-      }
-    };
-    jasmine.getEnv().addReporter(myReporter);
-},
-  onComplete: () => {
-    browser.quit();
-  }
-
-};
-
-// Code to support common capabilities
-exports.config.multiCapabilities.forEach(function(caps){
-  for(var i in exports.config.commonCapabilities) caps[i] = caps[i] || exports.config.commonCapabilities[i];
-});
+```bash
+export LT_USERNAME=LT_USERNAME
+export LT_ACCESS_KEY=LT_ACCESS_KEY
 ```
 
-Now lets define the capabilities. Since, we are performing parallel testing over different configurations we will make use of <code>multiCapabilities[]</code>. 
-```
-username= process.env.LT_USERNAME || "<your username>",
-accessKey=  process.env.LT_ACCESS_KEY || "<your accessKey>",
+For Linux:
 
-exports.config = {
-  'specs': [ '../specs/single.js' ],
-
-  seleniumAddress: 'https://'+username+':'+accessKey+'@hub.lambdatest.com/wd/hub',
-
-  'commonCapabilities': {
-    'build': 'protractor-selenium-sample',
-    'tunnel': false
-  },
-
-  'multiCapabilities': [{
-    'browserName': 'Chrome',
-    'version':'71.0',
-    'platform': 'Windows 10'
-  },{
-    'browserName': 'Safari',
-    'version':'12.0',
-    'platform': 'macOS Mojave'
-  },{
-    'browserName': 'MicrosoftEdge',
-    'version':'18.0',
-    'platform': 'Windows 10'
-  },{
-    'browserName': 'Firefox',
-    'version':'66.0',
-    'platform': 'Windows 10'
-  },{
-    'browserName': 'Internet explorer',
-    'version':'11.0',
-    'platform': 'Windows 10'
-  }],
-
-```
-Know how many concurrent sessions are needed by using our [Concurrency Test Calculator](https://www.lambdatest.com/concurrency-calculator?ref=github)
-
-#### Output from the command line 
- 
-![Output](https://www.lambdatest.com/blog/wp-content/uploads/2020/04/command-line-parallel-output.png) 
- 
-Below we see a screenshot that depicts our Protractor code is running over different browsers i.e Chrome, Firefox, IE, Edge, and Safari on the LambdaTest Selenium Grid Platform. The results of the test script execution along with the logs can be accessed from the [LambdaTest Automation dashboard](automation.lambdatest.com).
-
-#### Output from Automation Dashboard
-![Automation Dashboard](https://www.lambdatest.com/blog/wp-content/uploads/2020/04/parallel-automation.png)
-
-
-## Running your tests
-- To run a single test, run `npm run single`
-- To run parallel tests, run `npm run parallel`
-
-###  Performing an automation test on your local hosted application| Local Testing
-To perform an automation test on a file or application hosted on your local environment or behind firewall, follow the given steps: 
-
-- Set tunnel value to `true` in test capabilities
-
-So for example, if I have to run the above script for a locally hosted web-application then my capabilities class would be :
-
-```
-"tunnel" : true;
+```bash
+export LT_USERNAME=LT_USERNAME
+export LT_ACCESS_KEY=LT_ACCESS_KEY
 ```
 
-> OS specific instructions to download and setup tunnel binary can be found at the following links.
->    - [Windows](https://www.lambdatest.com/support/docs/display/TD/Local+Testing+For+Windows)
->    - [Mac](https://www.lambdatest.com/support/docs/display/TD/Local+Testing+For+MacOS)
->    - [Linux](https://www.lambdatest.com/support/docs/display/TD/Local+Testing+For+Linux)
+For Windows:
 
-### Important Note:
-Some Safari & IE browsers, doesn't support automatic resolution of the URL string "localhost". Therefore if you test on URLs like "http://localhost/" or "http://localhost:8080" etc, you would get an error in these browsers. A possible solution is to use "localhost.lambdatest.com" or replace the string "localhost" with machine IP address. For example if you wanted to test "http://localhost/dashboard" or, and your machine IP is 192.168.2.6 you can instead test on "http://192.168.2.6/dashboard" or "http://localhost.lambdatest.com/dashboard".
+```bash
+set LT_USERNAME=LT_USERNAME
+set LT_ACCESS_KEY=LT_ACCESS_KEY
+```
+
+# Matrix Execution with Protractor
+
+Matrix-based test execution is used for running the same tests across different test (or input) combinations. The Matrix directive in HyperTest YAML file is a *key:value* pair where value is an array of strings.
+
+Also, the *key:value* pairs are opaque strings for HyperTest. For more information about matrix multiplexing, check out the [Matrix Getting Started Guide](https://www.lambdatest.com/support/docs/getting-started-with-hypertest/#matrix-based-build-multiplexing)
+
+### Core
+
+In the current example, matrix YAML file (*yaml/pytest_hypertest_matrix_sample.yaml*) in the repo contains the following configuration:
+
+```yaml
+globalTimeout: 90
+testSuiteTimeout: 90
+testSuiteStep: 90
+```
+
+Global timeout, testSuite timeout, and testSuite timeout are set to 90 minutes.
+ 
+The target platform is set to Windows. Please set the *[runson]* key to *[mac]* if the tests have to be executed on the macOS platform. 
+
+```yaml
+runson: win
+```
+
+Protractor Spec files in the contain the Test Scenario run on the HyperExecute grid. In the example, the Test file *specs/fileupload.js* run in parallel on the basis of scenario by using the specified input combinations.
+
+```yaml
+matrix:
+  os: [linux]
+  browser: ["chrome","firefox","edge"]
+  Specs: ["specs/fileupload.js","specs/single.js"]
+
+```
+
+The *testSuites* object contains a list of commands (that can be presented in an array). In the current YAML file, commands for executing the tests are put in an array (with a '-' preceding each item). The npx command is used to run tests in *.feature* files. The tags are mentioned as an array to the *tags* key that is a part of the matrix.
+
+```yaml
+testSuites:
+  - protractor conf/single.conf.js --specs=$Specs --browser=$browser
+```
+
+### Pre Steps and Dependency Caching
+
+Dependency caching is enabled in the YAML file to ensure that the package dependencies are not downloaded in subsequent runs. The first step is to set the Key used to cache directories.
+
+```yaml
+cacheKey: '{{ checksum "package-lock.json" }}'
+```
+
+Set the array of files & directories to be cached. In the example, all the packages will be cached in the *CacheDir* directory.
+
+```yaml
+cacheDirectories:
+  - node_modules
+```
+
+Steps (or commands) that must run before the test execution are listed in the *pre* run step. In the example, the packages listed in *requirements.txt* are installed using the *npm install* command.
+
+```yaml
+pre:
+  - npm install -g protractor
+  - npm install
+```
 
 
-## About LambdaTest
+### Artefacts Management
 
-[LambdaTest](https://www.lambdatest.com/) is a cloud based selenium grid infrastructure that can help you run automated cross browser compatibility tests on 2000+ different browser and operating system environments. LambdaTest supports all programming languages and frameworks that are supported with Selenium, and have easy integrations with all popular CI/CD platforms. It's a perfect solution to bring your [selenium automation testing](https://www.lambdatest.com/selenium-automation) to cloud based infrastructure that not only helps you increase your test coverage over multiple desktop and mobile browsers, but also allows you to cut down your test execution time by running tests on parallel.
+The *mergeArtifacts* directive (which is by default *false*) is set to *true* for merging the artefacts and combing artefacts generated under each task.
 
-### Resources
+The *uploadArtefacts* directive informs HyperTest to upload artefacts [files, reports, etc.] generated after task completion. In the example, *path* consists of a regex for parsing the directory (i.e. *reports* that contains the test reports).
 
-##### [SeleniumHQ Documentation](http://www.seleniumhq.org/docs/)
-##### [Protractor Documentation](https://www.protractortest.org/#/api)
+```yaml
+mergeArtifacts: true
+
+uploadArtefacts:
+  - name: Reports
+    path: 
+      - ProtractorTestReport.html
+      - xmlresults.xml
+```
+
+HyperTest also facilitates the provision to download the artefacts on your local machine. To download the artefacts, click on Artefacts button corresponding to the associated TestID.
+
+## Test Execution
+
+The CLI option *--config* is used for providing the custom HyperTest YAML file (i.e. *HyperExecute-Yaml/.hyperTestMatrix.yaml.yaml*). Run the following command on the terminal to trigger the tests in Feature file Scenario on the HyperTest grid. 
+
+```bash
+./concierge --config --verbose HyperExecute-Yaml/.hyperExecute_matrix.yaml
+```
+
+Visit [HyperTest Automation Dashboard](https://automation.lambdatest.com/hypertest) to check the status of execution:
+
+
+## Auto-Split Execution with Protractor
+
+Auto-split execution mechanism lets you run tests at predefined concurrency and distribute the tests over the available infrastructure. Concurrency can be achieved at different levels - file, module, test suite, test, scenario, etc.
+
+For more information about auto-split execution, check out the [Auto-Split Getting Started Guide](https://www.lambdatest.com/support/docs/getting-started-with-hypertest/#smart-auto-test-splitting)
+
+### Core
+
+Auto-split YAML file (*HyperExecute-Yaml\.hypertestStatic.yaml*) in the repo contains the following configuration:
+
+```yaml
+globalTimeout: 90
+testSuiteTimeout: 90
+testSuiteStep: 90
+```
+
+Global timeout, testSuite timeout, and testSuite timeout are set to 90 minutes.
+ 
+The *runson* key determines the platform (or operating system) on which the tests are executed. Here we have set the target OS as Windows.
+
+```yaml
+runson: win
+```
+
+Auto-split is set to true in the YAML file.
+
+```yaml
+ autosplit: true
+``` 
+
+*retryOnFailure* is set to true, instructing HyperTest to retry failed command(s). The retry operation is carried out till the number of retries mentioned in *maxRetries* are exhausted or the command execution results in a *Pass*. In addition, the concurrency (i.e. number of parallel sessions) is set to 2.
+
+```yaml
+retryOnFailure: true
+runson: win
+maxRetries: 2
+```
+
+## Pre Steps and Dependency Caching
+
+To leverage the advantage offered by *Dependency Caching* in HyperTest, the integrity of *package-lock.json* is checked using the checksum functionality.
+
+```yaml
+cacheKey: '{{ checksum "package-lock.json" }}'
+```
+
+The caching advantage offered by *NPM* can be leveraged in HyperTest, whereby the downloaded packages can be stored (or cached) in a secure server for future executions. The packages available in the cache will only be used if the checksum stage results in a Pass.
+
+
+
+```yaml
+cacheDirectories:
+  - node_modules
+```
+
+The *testDiscovery* directive contains the command that gives details of the mode of execution, along with detailing the command that is used for test execution. Here, we are fetching the list of Feature file scenario that would be further executed using the *value* passed in the *testRunnerCommand*
+
+```yaml
+testDiscovery:
+  type: raw
+  mode: static
+  command: grep -nri 'describe' specs -ir --include=\*.js | sed 's/:.*//'
+  
+testRunnerCommand: protractor conf/single.conf.js --specs=$test --browser=chrome
+```
+
+Running the above command on the terminal will give a list of Feature Scenario lines that are located in the Project folder:
+
+Test Discovery Output:
+specs/fileupload.js
+specs/single.js
+
+The *testRunnerCommand* contains the command that is used for triggering the test. The output fetched from the *testDiscoverer* command acts as an input to the *testRunner* command.
+
+```yaml
+testRunnerCommand: protractor conf/single.conf.js --specs=$test --browser=chrome
+```
+
+### Artefacts Management
+
+The *mergeArtifacts* directive (which is by default *false*) is set to *true* for merging the artefacts and combing artefacts generated under each task.
+
+The *uploadArtefacts* directive informs HyperTest to upload artefacts [files, reports, etc.] generated after task completion.  In the example, *path* consists of a regex for parsing the directory (i.e. *reports* that contains the test reports).
+
+```yaml
+mergeArtifacts: true
+
+uploadArtefacts:
+  - name: Reports
+    path: 
+      - ProtractorTestReport.html
+      - xmlresults.xml
+    
+```
+HyperTest also facilitates the provision to download the artefacts on your local machine. To download the artefacts, click on *Artefacts* button corresponding to the associated TestID.
+
+### Test Execution
+
+The CLI option *--config* is used for providing the custom HyperTest YAML file (i.e. *HyperExecute-Yaml/.hypertestStatic.yaml*). Run the following command on the terminal to trigger the tests in Python files on the HyperTest grid. The *--download-artifacts* option is used to inform HyperTest to download the artefacts for the job.
+
+```bash
+./concierge --config --verbose HyperExecute-Yaml/.hypertest_autoSplit.yaml
+```
+
+Visit [HyperTest Automation Dashboard](https://automation.lambdatest.com/hypertest) to check the status of execution
+
+
+
+## Secrets Management
+
+In case you want to use any secret keys in the YAML file, the same can be set by clicking on the *Secrets* button the dashboard.
+
+
+All you need to do is create an environment variable that uses the secret key:
+
+```yaml
+env:
+  LT_ACCESS_KEY: ${{.secrets.LT_ACCESS_KEY}}
+```
+
+## Navigation in Automation Dashboard
+
+HyperTest lets you navigate from/to *Test Logs* in Automation Dashboard from/to *HyperTest Logs*. You also get relevant get relevant Selenium test details like video, network log, commands, Exceptions & more in the Dashboard. Effortlessly navigate from the automation dashboard to HyperTest logs (and vice-versa) to get more details of the test execution.
+
+
+## We are here to help you :)
+* LambdaTest Support: [support@lambdatest.com](mailto:support@lambdatest.com)
+* HyperTest HomePage: https://www.lambdatest.com/support/docs/getting-started-with-hypertest/
+* Lambdatest HomePage: https://www.lambdatest.com
+
+## License
+Licensed under the [MIT license](LICENSE).
