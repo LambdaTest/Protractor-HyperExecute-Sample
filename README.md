@@ -112,6 +112,8 @@ The *testSuites* object contains a list of commands (that can be presented in an
 testSuites:
   - protractor conf/single.conf.js --specs=$Specs --browser=$browser
 ```
+![image](https://user-images.githubusercontent.com/47247309/160449629-19886b8b-c07e-448f-9bc8-09a350d5b53e.png)
+
 
 ### Pre Steps and Dependency Caching
 
@@ -152,6 +154,8 @@ uploadArtefacts:
       - ProtractorTestReport.html
       - xmlresults.xml
 ```
+![image](https://user-images.githubusercontent.com/47247309/160449743-ab99951d-dba9-49da-9347-85c19ec4ede9.png)
+
 
 HyperTest also facilitates the provision to download the artefacts on your local machine. To download the artefacts, click on Artefacts button corresponding to the associated TestID.
 
@@ -162,6 +166,8 @@ The CLI option *--config* is used for providing the custom HyperTest YAML file (
 ```bash
 ./concierge --config --verbose -i .hyperExecute_matrix.yaml
 ```
+![image](https://user-images.githubusercontent.com/47247309/160449910-99361d98-f2e9-47d7-b3a0-a4fbc81e9557.png)
+
 
 Visit [HyperTest Automation Dashboard](https://automation.lambdatest.com/hypertest) to check the status of execution:
 
@@ -243,6 +249,8 @@ The *testRunnerCommand* contains the command that is used for triggering the tes
 ```yaml
 testRunnerCommand: protractor conf/single.conf.js --specs=$test --browser=chrome
 ```
+![image](https://user-images.githubusercontent.com/47247309/160448577-cecd6f22-d5a7-49f3-9166-8f239fe133fc.png)
+
 
 ### Artefacts Management
 
