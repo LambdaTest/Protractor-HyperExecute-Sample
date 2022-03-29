@@ -80,7 +80,7 @@ Also, the *key:value* pairs are opaque strings for HyperTest. For more informati
 
 ### Core
 
-In the current example, matrix YAML file (*yaml/pytest_hypertest_matrix_sample.yaml*) in the repo contains the following configuration:
+In the current example, matrix YAML file (*hyperExecute_matrix.yaml*) in the repo contains the following configuration:
 
 ```yaml
 globalTimeout: 90
@@ -106,7 +106,7 @@ matrix:
 
 ```
 
-The *testSuites* object contains a list of commands (that can be presented in an array). In the current YAML file, commands for executing the tests are put in an array (with a '-' preceding each item). The npx command is used to run tests in *.feature* files. The tags are mentioned as an array to the *tags* key that is a part of the matrix.
+The *testSuites* object contains a list of commands (that can be presented in an array). In the current YAML file, commands for executing the tests are put in an array (with a '-' preceding each item). The npx command is used to run tests in *spec* files. The tags are mentioned as an array to the *tags* key that is a part of the matrix.
 
 ```yaml
 testSuites:
@@ -161,7 +161,7 @@ HyperTest also facilitates the provision to download the artefacts on your local
 
 ## Test Execution
 
-The CLI option *--config* is used for providing the custom HyperTest YAML file (i.e. *HyperExecute-Yaml/.hyperTestMatrix.yaml.yaml*). Run the following command on the terminal to trigger the tests in Feature file Scenario on the HyperTest grid. 
+The CLI option *--config* is used for providing the custom HyperTest YAML file (i.e. *hyperExecute_Matrix.yaml*). Run the following command on the terminal to trigger the tests in Feature file Scenario on the HyperTest grid. 
 
 ```bash
 ./concierge --config --verbose -i .hyperExecute_matrix.yaml
@@ -272,7 +272,7 @@ HyperTest also facilitates the provision to download the artefacts on your local
 
 ### Test Execution
 
-The CLI option *--config* is used for providing the custom HyperTest YAML file (i.e. *HyperExecute-Yaml/.hypertestStatic.yaml*). Run the following command on the terminal to trigger the tests in Python files on the HyperTest grid. The *--download-artifacts* option is used to inform HyperTest to download the artefacts for the job.
+The CLI option *--config* is used for providing the custom HyperTest YAML file (i.e. *.hyperExecute_autoSplit.yaml*). Run the following command on the terminal to trigger the tests in Python files on the HyperTest grid. The *--download-artifacts* option is used to inform HyperTest to download the artefacts for the job.
 
 ```bash
 ./concierge --config --verbose -i .hypertest_autoSplit.yaml
