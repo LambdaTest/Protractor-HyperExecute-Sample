@@ -16,14 +16,14 @@ To know more about how HyperTest does intelligent Test Orchestration, do check o
    - [Download Concierge](#download-concierge)
    - [Configure Environment Variables](#configure-environment-variables)
    
-* [Matrix Execution with PyTest](#matrix-execution-with-pytest)
+* [Matrix Execution with protractor](#matrix-execution-with-protractor)
    - [Core](#core)
    - [Pre Steps and Dependency Caching](#pre-steps-and-dependency-caching)
    - [Post Steps](#post-steps)
    - [Artefacts Management](#artefacts-management)
    - [Test Execution](#test-execution)
 
-* [Auto-Split Execution with PyTest](#auto-split-execution-with-pytest)
+* [Auto-Split Execution with protractor](#auto-split-execution-with-protractor)
    - [Core](#core-1)
    - [Pre Steps and Dependency Caching](#pre-steps-and-dependency-caching-1)
    - [Post Steps](#post-steps-1)
