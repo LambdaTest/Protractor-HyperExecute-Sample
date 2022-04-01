@@ -1,0 +1,17 @@
+---
+version: 0.1
+runson: linux
+concurrency: 3
+autosplit: true
+pre:
+  - npm install -g protractor
+  - npm install
+
+cacheKey: '{{ checksum "package-lock.json" }}'
+cacheDirectories:
+  - node_modules
+testDiscovery:
+  type: raw
+  mode: dynamic
+  command: grep -nri 'describe' specs -ir --include=*.js | sed 's/:.*//'
+testRunnerCommand: protractor conf/single.conf.js --specs=$test --browser=chrome

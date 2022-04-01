@@ -7,7 +7,7 @@ jasmineReporters = require('jasmine-reporters');
 
 
 exports.config = {
-  
+
     'specs': ["../specs/single.js" , "../specs/fileupload.js"],
 
   seleniumAddress: 'https://'+ username +':'+ accessKey  +'@hub.lambdatest.com/wd/hub',
@@ -16,7 +16,7 @@ exports.config = {
     'build': 'protractor-LambdaTest-Single-build',
     'browserName': browserparam,
     'version':'latest-1',
-    'platform': 'linux',
+    'platform': 'Windows 10',
   },
   onPrepare: () => {
 
@@ -42,14 +42,14 @@ exports.config = {
   onComplete: () => {
     var browserName, browserVersion;
      var capsPromise = browser.getCapabilities();
- 
+
      capsPromise.then(function (caps) {
         browserName = caps.get('browserName');
         browserVersion = caps.get('version');
         platform = caps.get('platform');
- 
+
         var HTMLReport = require('protractor-html-reporter-2');
- 
+
         testConfig = {
             reportTitle: 'Protractor Test Execution Report',
             outputPath: './',
