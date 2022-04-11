@@ -13,39 +13,38 @@ To know more about how HyperExecute does intelligent Test Orchestration, do chec
 # How to run Selenium automation tests on HyperExecute (using protractor framework)
 
 * [Pre-requisites](#pre-requisites)
-   - [Download Concierge](#download-concierge)
+   - [Download HyperExecute CLI](#download-hyperexecute-cli)
    - [Configure Environment Variables](#configure-environment-variables)
 
-* [Matrix Execution with protractor](#matrix-execution-with-protractor)
+* [Auto-Split Execution with protractor](#auto-split-execution-with-protractor)
    - [Core](#core)
    - [Pre Steps and Dependency Caching](#pre-steps-and-dependency-caching)
-   - [Post Steps](#post-steps)
-   - [Artefacts Management](#artefacts-management)
+   - [Artifacts Management](#artifacts-management)
    - [Test Execution](#test-execution)
 
-* [Auto-Split Execution with protractor](#auto-split-execution-with-protractor)
+* [Matrix Execution with protractor](#matrix-execution-with-protractor)
    - [Core](#core-1)
    - [Pre Steps and Dependency Caching](#pre-steps-and-dependency-caching-1)
-   - [Post Steps](#post-steps-1)
-   - [Artefacts Management](#artefacts-management-1)
+   - [Artifacts Management](#artifacts-management-1)
    - [Test Execution](#test-execution-1)
 
+* [Run Protractor tests on Windows and Linux platforms](#run-protractor-tests-on-windows-and-linux-platforms)
 * [Secrets Management](#secrets-management)
 * [Navigation in Automation Dashboard](#navigation-in-automation-dashboard)
 
 # Pre-requisites
 
-Before using HyperExecute, you have to download Concierge CLI corresponding to the host OS. Along with it, you also need to export the environment variables *LT_USERNAME* and *LT_ACCESS_KEY* that are available in the [LambdaTest Profile](https://accounts.lambdatest.com/detail/profile) page.
+Before using HyperExecute, you have to download HyperExecute CLI corresponding to the host OS. Along with it, you also need to export the environment variables *LT_USERNAME* and *LT_ACCESS_KEY* that are available in the [LambdaTest Profile](https://accounts.lambdatest.com/detail/profile) page.
 
-## Download Concierge
+## Download HyperExecute CLI
 
-Concierge is a CLI for interacting and running the tests on the HyperExecute Grid. Concierge provides a host of other useful features that accelerate test execution. In order to trigger tests using Concierge, you need to download the Concierge binary corresponding to the platform (or OS) from where the tests are triggered:
+HyperExecute CLI is the CLI for interacting and running the tests on the HyperExecute Grid. The CLI provides a host of other useful features that accelerate test execution. In order to trigger tests using the CLI, you need to download the HyperExecute CLI binary corresponding to the platform (or OS) from where the tests are triggered:
 
-Also, it is recommended to download the binary in the project's parent directory. Shown below is the location from where you can download the Concierge binary:
+Also, it is recommended to download the binary in the project's parent directory. Shown below is the location from where you can download the HyperExecute CLI binary:
 
-* Mac: https://downloads.lambdatest.com/concierge/darwin/concierge
-* Linux: https://downloads.lambdatest.com/concierge/linux/concierge
-* Windows: https://downloads.lambdatest.com/concierge/windows/concierge.exe
+* Mac: https://downloads.lambdatest.com/hyperexecute/darwin/hyperexecute
+* Linux: https://downloads.lambdatest.com/hyperexecute/linux/hyperexecute
+* Windows: https://downloads.lambdatest.com/hyperexecute/windows/hyperexecute.exe
 
 ## Configure Environment Variables
 
@@ -71,106 +70,6 @@ For Windows:
 set LT_USERNAME=LT_USERNAME
 set LT_ACCESS_KEY=LT_ACCESS_KEY
 ```
-
-# Matrix Execution with Protractor
-
-Matrix-based test execution is used for running the same tests across different test (or input) combinations. The Matrix directive in HyperExecute YAML file is a *key:value* pair where value is an array of strings.
-
-Also, the *key:value* pairs are opaque strings for HyperExecute. For more information about matrix multiplexing, check out the [Matrix Getting Started Guide](https://www.lambdatest.com/support/docs/getting-started-with-hyperexecute/#matrix-based-build-multiplexing)
-
-### Core
-
-In the current example, matrix YAML file (*hyperExecute_matrix.yaml*) in the repo contains the following configuration:
-
-```yaml
-globalTimeout: 90
-testSuiteTimeout: 90
-testSuiteStep: 90
-```
-
-Global timeout, testSuite timeout, and testSuite timeout are set to 90 minutes.
- 
-The target platform is set to Windows. Please set the *[runson]* key to *[mac]* if the tests have to be executed on the macOS platform.
-
-```yaml
-runson: win
-```
-
-Protractor Spec files in the contain the Test Scenario run on the HyperExecute grid. In the example, the Test file *specs/fileupload.js* run in parallel on the basis of scenario by using the specified input combinations.
-
-```yaml
-matrix:
-  os: [linux]
-  browser: ["chrome","firefox","edge"]
-  Specs: ["specs/fileupload.js","specs/single.js"]
-
-```
-
-The *testSuites* object contains a list of commands (that can be presented in an array). In the current YAML file, commands for executing the tests are put in an array (with a '-' preceding each item). The npx command is used to run tests in *spec* files. The tags are mentioned as an array to the *tags* key that is a part of the matrix.
-
-```yaml
-testSuites:
-  - protractor conf/single.conf.js --specs=$Specs --browser=$browser
-```
-![image](https://user-images.githubusercontent.com/47247309/160449629-19886b8b-c07e-448f-9bc8-09a350d5b53e.png)
-
-
-### Pre Steps and Dependency Caching
-
-Dependency caching is enabled in the YAML file to ensure that the package dependencies are not downloaded in subsequent runs. The first step is to set the Key used to cache directories.
-
-```yaml
-cacheKey: '{{ checksum "package-lock.json" }}'
-```
-
-Set the array of files & directories to be cached. In the example, all the packages will be cached in the *CacheDir* directory.
-
-```yaml
-cacheDirectories:
-  - node_modules
-```
-
-Steps (or commands) that must run before the test execution are listed in the *pre* run step. In the example, the packages listed in *requirements.txt* are installed using the *npm install* command.
-
-```yaml
-pre:
-  - npm install -g protractor
-  - npm install
-```
-
-
-### Artefacts Management
-
-The *mergeArtifacts* directive (which is by default *false*) is set to *true* for merging the artefacts and combing artefacts generated under each task.
-
-The *uploadArtefacts* directive informs HyperExecute to upload artefacts [files, reports, etc.] generated after task completion. In the example, *path* consists of a regex for parsing the directory (i.e. *reports* that contains the test reports).
-
-```yaml
-mergeArtifacts: true
-
-uploadArtefacts:
-  - name: Reports
-    path:
-      - ProtractorTestReport.html
-      - xmlresults.xml
-```
-![image](https://user-images.githubusercontent.com/47247309/160449743-ab99951d-dba9-49da-9347-85c19ec4ede9.png)
-
-
-HyperExecute also facilitates the provision to download the artefacts on your local machine. To download the artefacts, click on Artefacts button corresponding to the associated TestID.
-
-## Test Execution
-
-The CLI option *--config* is used for providing the custom HyperExecute YAML file (i.e. *hyperExecute_Matrix.yaml*). Run the following command on the terminal to trigger the tests in Feature file Scenario on the HyperExecute grid.
-
-```bash
-./concierge --config --verbose -i .hyperExecute_matrix.yaml
-```
-![image](https://user-images.githubusercontent.com/47247309/160449910-99361d98-f2e9-47d7-b3a0-a4fbc81e9557.png)
-
-
-Visit [HyperExecute Automation Dashboard](https://automation.lambdatest.com/hyperexecute) to check the status of execution:
-
 
 ## Auto-Split Execution with Protractor
 
@@ -252,11 +151,11 @@ testRunnerCommand: protractor conf/single.conf.js --specs=$test --browser=chrome
 ![image](https://user-images.githubusercontent.com/47247309/160448577-cecd6f22-d5a7-49f3-9166-8f239fe133fc.png)
 
 
-### Artefacts Management
+### Artifacts Management
 
-The *mergeArtifacts* directive (which is by default *false*) is set to *true* for merging the artefacts and combing artefacts generated under each task.
+The *mergeArtifacts* directive (which is by default *false*) is set to *true* for merging the artifacts and combing artifacts generated under each task.
 
-The *uploadArtefacts* directive informs HyperExecute to upload artefacts [files, reports, etc.] generated after task completion.  In the example, *path* consists of a regex for parsing the directory (i.e. *reports* that contains the test reports).
+The *uploadArtefacts* directive informs HyperExecute to upload artifacts [files, reports, etc.] generated after task completion.  In the example, *path* consists of a regex for parsing the directory (i.e. *reports* that contains the test reports).
 
 ```yaml
 mergeArtifacts: true
@@ -268,19 +167,131 @@ uploadArtefacts:
       - xmlresults.xml
 
 ```
-HyperExecute also facilitates the provision to download the artefacts on your local machine. To download the artefacts, click on *Artefacts* button corresponding to the associated TestID.
+HyperExecute also facilitates the provision to download the artifacts on your local machine. To download the artifacts, click on *Artifacts* button corresponding to the associated TestID.
 
 ### Test Execution
 
-The CLI option *--config* is used for providing the custom HyperExecute YAML file (i.e. *.hyperExecute_autoSplit.yaml*). Run the following command on the terminal to trigger the tests in Python files on the HyperExecute grid. The *--download-artifacts* option is used to inform HyperExecute to download the artefacts for the job.
+The CLI option *--config* is used for providing the custom HyperExecute YAML file (i.e. *.hyperExecute_autoSplit.yaml*). Run the following command on the terminal to trigger the tests in Python files on the HyperExecute grid. The *--download-artifacts* option is used to inform HyperExecute to download the artifacts for the job.
 
 ```bash
-./concierge --config --verbose -i .hyperexecute_autoSplit.yaml
+./hyperexecute --config --verbose -i .hyperexecute_autoSplit.yaml
 ```
 
 Visit [HyperExecute Automation Dashboard](https://automation.lambdatest.com/hyperexecute) to check the status of execution
 
+# Matrix Execution with Protractor
 
+Matrix-based test execution is used for running the same tests across different test (or input) combinations. The Matrix directive in HyperExecute YAML file is a *key:value* pair where value is an array of strings.
+
+Also, the *key:value* pairs are opaque strings for HyperExecute. For more information about matrix multiplexing, check out the [Matrix Getting Started Guide](https://www.lambdatest.com/support/docs/getting-started-with-hyperexecute/#matrix-based-build-multiplexing)
+
+### Core
+
+In the current example, matrix YAML file (*hyperExecute_matrix.yaml*) in the repo contains the following configuration:
+
+```yaml
+globalTimeout: 90
+testSuiteTimeout: 90
+testSuiteStep: 90
+```
+
+Global timeout, testSuite timeout, and testSuite timeout are set to 90 minutes.
+ 
+The target platform is set to Windows. Please set the *[runson]* key to *[mac]* if the tests have to be executed on the macOS platform.
+
+```yaml
+runson: win
+```
+
+Protractor Spec files in the contain the Test Scenario run on the HyperExecute grid. In the example, the Test file *specs/fileupload.js* run in parallel on the basis of scenario by using the specified input combinations.
+
+```yaml
+matrix:
+  os: [linux]
+  browser: ["chrome","firefox","edge"]
+  Specs: ["specs/fileupload.js","specs/single.js"]
+
+```
+
+The *testSuites* object contains a list of commands (that can be presented in an array). In the current YAML file, commands for executing the tests are put in an array (with a '-' preceding each item). The npx command is used to run tests in *spec* files. The tags are mentioned as an array to the *tags* key that is a part of the matrix.
+
+```yaml
+testSuites:
+  - protractor conf/single.conf.js --specs=$Specs --browser=$browser
+```
+![image](https://user-images.githubusercontent.com/47247309/160449629-19886b8b-c07e-448f-9bc8-09a350d5b53e.png)
+
+
+### Pre Steps and Dependency Caching
+
+Dependency caching is enabled in the YAML file to ensure that the package dependencies are not downloaded in subsequent runs. The first step is to set the Key used to cache directories.
+
+```yaml
+cacheKey: '{{ checksum "package-lock.json" }}'
+```
+
+Set the array of files & directories to be cached. In the example, all the packages will be cached in the *CacheDir* directory.
+
+```yaml
+cacheDirectories:
+  - node_modules
+```
+
+Steps (or commands) that must run before the test execution are listed in the *pre* run step. In the example, the packages listed in *requirements.txt* are installed using the *npm install* command.
+
+```yaml
+pre:
+  - npm install -g protractor
+  - npm install
+```
+
+### Artifacts Management
+
+The *mergeArtifacts* directive (which is by default *false*) is set to *true* for merging the artifacts and combing artifacts generated under each task.
+
+The *uploadArtefacts* directive informs HyperExecute to upload artifacts [files, reports, etc.] generated after task completion. In the example, *path* consists of a regex for parsing the directory (i.e. *reports* that contains the test reports).
+
+```yaml
+mergeArtifacts: true
+
+uploadArtefacts:
+  - name: Reports
+    path:
+      - ProtractorTestReport.html
+      - xmlresults.xml
+```
+![image](https://user-images.githubusercontent.com/47247309/160449743-ab99951d-dba9-49da-9347-85c19ec4ede9.png)
+
+
+HyperExecute also facilitates the provision to download the artifacts on your local machine. To download the artifacts, click on Artifacts button corresponding to the associated TestID.
+
+## Test Execution
+
+The CLI option *--config* is used for providing the custom HyperExecute YAML file (i.e. *hyperExecute_Matrix.yaml*). Run the following command on the terminal to trigger the tests in Feature file Scenario on the HyperExecute grid.
+
+```bash
+./hyperexecute --config --verbose -i .hyperExecute_matrix.yaml
+```
+![image](https://user-images.githubusercontent.com/47247309/160449910-99361d98-f2e9-47d7-b3a0-a4fbc81e9557.png)
+
+
+Visit [HyperExecute Automation Dashboard](https://automation.lambdatest.com/hyperexecute) to check the status of execution:
+
+## Run Protractor tests on Windows and Linux platforms
+
+The CLI option *--config* is used for providing the custom HyperExecute YAML file (i.e. *yaml/.hyperexecute_simple_win.yaml* for Windows and *yaml/.hyperexecute_simple_linux.yaml* for Linux).
+
+Run the following command on the terminal to trigger tests on Windows platform:
+
+```bash
+./hyperexecute --config --verbose yaml/.hyperexecute_simple_win.yaml
+```
+
+Run the following command on the terminal to trigger tests on Linux platform:
+
+```bash
+./hyperexecute --config --verbose yaml/.hyperexecute_simple_linux.yaml
+```
 
 ## Secrets Management
 
