@@ -1,6 +1,7 @@
 username= process.env.LT_USERNAME || "<your username>",
 accessKey=  process.env.LT_ACCESS_KEY || "<your accessKey>",
 browserparam = process.argv[3].substring(10,process.argv[3].length),
+platformName= process.env.HYPEREXECUTE_PLATFORM || "Windows 10"    
 
 console.log('--------------------------------------', browserparam),
 jasmineReporters = require('jasmine-reporters');
@@ -16,7 +17,10 @@ exports.config = {
     'build': 'protractor-LambdaTest-Single-build',
     'browserName': browserparam,
     'version':'latest-1',
-    'platform': 'Windows 10',
+    'platform': platformName,
+    'visual': true,
+    'network': true,
+    'console': true,
   },
   onPrepare: () => {
 
