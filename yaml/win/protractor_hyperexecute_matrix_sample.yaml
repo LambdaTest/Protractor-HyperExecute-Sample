@@ -1,0 +1,29 @@
+globalTimeout: 90
+testSuiteTimeout: 90
+testSuiteStep: 90
+
+env:
+  LT_ACCESS_KEY: ${{.secrets.LT_ACCESS_KEY}}
+  LT_USERNAME: ${{.secrets.LT_USERNAME}}
+
+cacheKey: '{{ checksum "package-lock.json" }}'
+cacheDirectories:
+  - node_modules
+
+pre:
+  - npm install -g protractor
+  - npm install 
+
+matrix:
+  os: [win]
+  browser: ["chrome","firefox","edge"]
+  Specs: ["specs/fileupload.js","specs/single.js"]
+
+uploadArtefacts:
+  - name: Reports
+    path: 
+      - ProtractorTestReport.html
+      - xmlresults.xml
+  
+testSuites:
+  - protractor conf/single.conf.js --specs=$Specs --browser=$browser

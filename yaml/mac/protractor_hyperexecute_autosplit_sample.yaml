@@ -1,0 +1,40 @@
+version: 0.1
+globalTimeout: 90
+testSuiteTimeout: 90
+testSuiteStep: 90
+
+runson: mac
+
+autosplit: true
+retryOnFailure: true
+
+maxRetries: 1
+concurrency: 2
+
+env:
+  LT_ACCESS_KEY: ${{.secrets.LT_ACCESS_KEY}}
+  LT_USERNAME: ${{.secrets.LT_USERNAME}}
+
+  
+cacheKey: '{{ checksum "package-lock.json" }}'
+cacheDirectories:
+  - node_modules
+
+pre:
+  - npm install -g protractor
+  - npm install
+
+uploadArtefacts:
+  - name: Reports
+    path: 
+      - ProtractorTestReport.html
+      - xmlresults.xml
+
+testDiscovery:
+  type: raw
+  mode: dynamic
+  command: grep -nri 'describe' specs -ir --include=*.js | sed 's/:.*//'
+testRunnerCommand: protractor conf/single.conf.js --specs=$test --browser=chrome
+
+    
+  
