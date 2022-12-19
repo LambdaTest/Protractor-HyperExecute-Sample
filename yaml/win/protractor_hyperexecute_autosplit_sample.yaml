@@ -10,12 +10,7 @@ retryOnFailure: true
 
 maxRetries: 1
 concurrency: 2
-
-env:
-  LT_ACCESS_KEY: ${{.secrets.LT_ACCESS_KEY}}
-  LT_USERNAME: ${{.secrets.LT_USERNAME}}
-
-  
+ 
 cacheKey: '{{ checksum "package-lock.json" }}'
 cacheDirectories:
   - node_modules
