@@ -31,5 +31,5 @@ testDiscovery:
   command: grep -nri 'describe' specs -ir --include=*.js | sed 's/:.*//'
 testRunnerCommand: protractor conf/single.conf.js --specs=$test --browser=chrome
 
-    
+jobLabel: [selenium-protractor, win, autosplit]    
   
