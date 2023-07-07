@@ -27,3 +27,5 @@ uploadArtefacts:
   
 testSuites:
   - protractor conf/single.conf.js --specs=$Specs --browser=$browser
+
+jobLabel: [selenium-protractor, win, matrix]
