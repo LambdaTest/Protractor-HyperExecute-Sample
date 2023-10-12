@@ -1,14 +1,18 @@
+version: 0.1
 globalTimeout: 90
 testSuiteTimeout: 90
 testSuiteStep: 90
 
-env:
-  LT_ACCESS_KEY: ${{.secrets.LT_ACCESS_KEY}}
-  LT_USERNAME: ${{.secrets.LT_USERNAME}}
-
 cacheKey: '{{ checksum "package-lock.json" }}'
 cacheDirectories:
   - node_modules
+
+runson: win
+
+retryOnFailure: true
+
+maxRetries: 1
+concurrency: 1
 
 pre:
   - npm install -g protractor
@@ -18,6 +22,8 @@ matrix:
   os: [win]
   browser: ["chrome","firefox","edge"]
   Specs: ["specs/fileupload.js","specs/single.js"]
+
+mergeArtifacts: true
 
 uploadArtefacts:
   - name: Reports
