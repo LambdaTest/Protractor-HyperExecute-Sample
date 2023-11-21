@@ -19,6 +19,8 @@ pre:
   - npm install -g protractor
   - npm install
 
+mergeArtifacts: true
+
 uploadArtefacts:
   - name: Reports
     path: 

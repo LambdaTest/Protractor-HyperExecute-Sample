@@ -3,14 +3,19 @@ globalTimeout: 90
 testSuiteTimeout: 90
 testSuiteStep: 90
 
-runson: win
+runson: ${matrix.os}
 
 autosplit: true
 retryOnFailure: true
-
 maxRetries: 1
-concurrency: 2
- 
+concurrency: 1
+parallelism: 1
+
+matrix:
+  os: [linux, win, mac]
+  browser: ["chrome","firefox","edge"]
+  Specs: ["specs/fileupload.js","specs/single.js"]
+
 cacheKey: '{{ checksum "package-lock.json" }}'
 cacheDirectories:
   - node_modules
@@ -31,7 +36,7 @@ testDiscovery:
   type: raw
   mode: dynamic
   command: grep -nri 'describe' specs -ir --include=*.js | sed 's/:.*//'
+
 testRunnerCommand: protractor conf/single.conf.js --specs=$test --browser=chrome
 
-jobLabel: [selenium-protractor, win, autosplit]    
-  
+jobLabel: [selenium-protractor, hybrid]    
