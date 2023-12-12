@@ -30,7 +30,13 @@ uploadArtefacts:
     path: 
       - ProtractorTestReport.html
       - xmlresults.xml
-  
+
+report: true
+partialReports:
+    type: json
+    location: /
+    frameworkName: extent
+
 testSuites:
   - protractor conf/single.conf.js --specs=$Specs --browser=$browser
 
