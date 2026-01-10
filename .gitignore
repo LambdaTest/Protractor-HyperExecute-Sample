@@ -6,3 +6,6 @@ concierge.exe
 logs/
 nucleus.log
 artifacts
+hyperexecute
+hyperexecute-cli.log
+artifacts-old*
