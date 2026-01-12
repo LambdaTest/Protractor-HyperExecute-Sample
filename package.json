@@ -17,12 +17,12 @@
     "url": "https://github.com/lambdatest/protractor-selenium-sample"
   },
   "dependencies": {
-    "protractor": "^5.4.2"
+    "protractor": "^7.0.0"
   },
   "license": "MIT",
   "devDependencies": {
     "grep": "^0.1.0",
-    "jasmine-reporters": "^2.5.0",
+    "jasmine-reporters": "^2.5.2",
     "protractor-html-reporter-2": "^1.0.4"
   }
 }
