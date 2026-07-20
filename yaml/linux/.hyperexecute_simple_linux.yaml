@@ -12,7 +12,7 @@ cacheDirectories:
   - node_modules
 testDiscovery:
   type: raw
-  mode: dynamic
+  mode: remote
   command: grep -nri 'describe' specs -ir --include=*.js | sed 's/:.*//'
 testRunnerCommand: protractor conf/single.conf.js --specs=$test --browser=chrome
 
