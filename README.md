@@ -13,7 +13,7 @@
 With TestMu AI (Formerly LambdaTest), you can run Protractor tests on HyperExecute — the smart test orchestration platform for fastest execution. This sample shows how to configure Protractor tests to run on HyperExecute.
 
 - [Sign up on TestMu AI](https://www.testmuai.com/register/) (Formerly LambdaTest).
-- Follow the [TestMu AI Documentation](https://www.testmuai.com/support/docs/protractor-on-hyperexecute-grid/) for the full setup walkthrough.
+- Follow the [Run Protractor tests on HyperExecute](https://www.testmuai.com/support/docs/protractor-on-hyperexecute-grid/) for the full setup walkthrough.
 
 ### Prerequisites
 
